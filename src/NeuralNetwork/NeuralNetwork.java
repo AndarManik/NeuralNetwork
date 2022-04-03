@@ -1,5 +1,4 @@
 package NeuralNetwork;
-
 import java.util.ArrayList;
 
 public class NeuralNetwork {
@@ -17,13 +16,30 @@ public class NeuralNetwork {
     }
 
     public double back( double[] input, double[] expected ) {
-        double[] gradient = calc( input );
-        for ( int i = 0; i < gradient.length; i++ )
-            gradient[ i ] -= expected[ i ];
+        double[] gradient = getOutputGradient( input, expected );
+        backPassGradient( gradient );
+        forwardPassWeightGradient( input );
+        return getNetworkError( expected );
+    }
+
+    double[] getOutputGradient( double[] input, double[] expected ) {
+        double[] outputGradient = calc( input );
+        for ( int i = 0; i < outputGradient.length; i++ )
+            outputGradient[ i ] -= expected[ i ];
+        return outputGradient;
+    }
+
+    void backPassGradient( double[] gradient ) {
         for ( int layer = network.size() - 1; layer >= 0; layer-- )
             gradient = network.get( layer ).back( gradient );
-        for ( int layer = 0; layer < network.size(); layer++ )
-            input = network.get( layer ).weightGrad( input );
+    }
+
+    private void forwardPassWeightGradient( double[] input ) {
+        for ( Layer value : network )
+            input = value.weightGrad( input );
+    }
+
+    double getNetworkError( double[] expected ) {
         double error = 0;
         double[] output = network.get( network.size() - 1 ).val;
         for ( int i = 0; i < expected.length; i++ )
