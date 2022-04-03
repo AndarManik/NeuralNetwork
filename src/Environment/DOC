@@ -1,0 +1,7 @@
+Create a training enviroment
+
+[ ] creating saving and loading networks
+[ ] using and training networks
+
+    The Environment is a place to load and
+store neural networks and train using data loader.
