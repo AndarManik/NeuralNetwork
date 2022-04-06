@@ -2,7 +2,7 @@ package NeuralNetwork;
 import java.util.ArrayList;
 
 public class NeuralNetwork {
-    ArrayList<Layer> network = new ArrayList<>();
+    public ArrayList<Layer> network = new ArrayList<>();
 
     public NeuralNetwork( int[] dim ) {
         for ( int layer = 1; layer < dim.length; layer++ )
@@ -34,7 +34,7 @@ public class NeuralNetwork {
             gradient = network.get( layer ).back( gradient );
     }
 
-    private void forwardPassWeightGradient( double[] input ) {
+    void forwardPassWeightGradient( double[] input ) {
         for ( Layer value : network )
             input = value.weightGrad( input );
     }

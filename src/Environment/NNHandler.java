@@ -1,59 +1,76 @@
 package Environment;
 
-import NeuralNetwork.NeuralNetwork;
+import NeuralNetwork.*;
 
+import java.io.File;
+import java.io.FileWriter;
+import java.io.IOException;
+import java.util.Arrays;
 import java.util.Scanner;
 
+public class NNHandler extends EnvironmentObject {
+    int[] dim;
+    NeuralNetwork neuralNetwork;
 
-public class NNHandler {
-    static NeuralNetwork neuralNetwork;
-    static DataLoader dataLoader;
-    static Scanner sc = new Scanner( System.in );
-
-    public NNHandler( NeuralNetwork neuralNetwork ) {
-        neuralNetwork = neuralNetwork;
-        dataLoader = new DataLoader();
+    public NNHandler( Scanner userInput ) {
+        super( "Neural Network", userInput );
+        constructorLoop();
     }
 
-    public static void handle() {
-        System.out.println( "test or train" );
-        String choice = sc.nextLine();
+    void create() {
+        System.out.println( "Enter Neural Network Name" );
+        name = userInput.nextLine();
+        System.out.println( "Enter Neural Network Dimensions" );
+        dim = getUserInputIntArr();
+        neuralNetwork = new NeuralNetwork( dim );
+    }
 
-        switch ( choice ) {
-            case "test":
-                test();
-                break;
-            case "train":
-                train();
-                break;
+      void load() {
+        System.out.println( "Enter NeuralNetwork Name" );
+        name = userInput.nextLine();
+        File file = new File( neuralNetworkPath + "\\" + name + ".txt" );
+        try {
+            Scanner fileScanner = new Scanner( file );
+            String[] inString = fileScanner.nextLine().replace( "[", "" ).replace( "]", "" ).split( ", " );
+            int[] dim = new int[ inString.length ];
+            for ( int i = 0; i < inString.length; i++ )
+                dim[ i ] = Integer.parseInt( inString[ i ] );
+            neuralNetwork = new NeuralNetwork(dim);
+            for ( Layer layer : neuralNetwork.network )
+                for ( int i = 0; i < layer.weight.length; i++ ) {
+                    inString = fileScanner.nextLine().replace( "[", "" ).replace( "]", "" ).split( ", " );
+                    double[] weight = new double[ inString.length ];
+                    for ( int j = 0; j < inString.length; j++ )
+                        weight[ j ] = Double.parseDouble( inString[ j ] );
+
+                    layer.weight[i] = weight;
+                }
+
+        } catch ( Exception e ) {
+            System.out.println(e);
+            load();
         }
     }
 
-    static void test() {
-        int numUnderThresh = 0;
-        for( InputOutputPair iop : dataLoader ) {
-            double[] computedOutput = neuralNetwork.calc(iop.input);
-            double distance = distance(computedOutput, iop.output);
-            if(distance < dataLoader.threshold)
-                numUnderThresh++;
-        }
-        System.out.println(numUnderThresh + " " + dataLoader.size());
+    @Override
+    public String display() {
+        return "Neural Network " + Arrays.toString( dim );
     }
 
-    static double distance( double[] computedOutput, double[] output ) {
-        double distance = 0;
-        for ( int i = 0; i < output.length; i++ )
-            distance += (computedOutput[i] - output[i]) * (computedOutput[i] - output[i]);
-        return distance;
-    }
-
-    static void train() {
-        double error = 0;
-        int traingingExamples;
-        for ( InputOutputPair iop : dataLoader ) {
-            error += neuralNetwork.back(iop.input, iop.output);
-            if()
+    @Override
+    public void save() {
+        try {
+            File file = new File( name );
+            file.createNewFile();
+            FileWriter fileWriter = new FileWriter( neuralNetworkPath + "\\" + name + ".txt" );
+            fileWriter.write( Arrays.toString( dim ) + "\n" );
+            for ( Layer layer : neuralNetwork.network )
+                for ( double[] weights : layer.weight )
+                    fileWriter.write(Arrays.toString(weights) + "\n");
+            fileWriter.flush();
+            fileWriter.close();
+        } catch ( IOException e ) {
+            e.printStackTrace();
         }
-
     }
 }

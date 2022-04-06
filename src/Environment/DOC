@@ -1,7 +1,21 @@
-Create a training enviroment
+Create a training environment
 
 [ ] creating saving and loading networks
 [ ] using and training networks
 
-    The Environment is a place to load and
-store neural networks and train using data loader.
+--- Environment
+Is a IO loop used to load and use Environment Objects.
+Contains IO Scanner and collection of Environment Objects.
+Uses IO to load and manipulate Environment Objects.
+
+--- Environment Objects
+Are Neural Networks/extensions or Data Loaders.
+Contains Display method
+
+--- Neural Network/extensions
+Are objects which take input and give output that can be trained useing learning
+Contains Parameters and Learning Algorithm
+
+--- Data Loaders
+Are data streams
+Contains Collection of input output pairs for training

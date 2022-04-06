@@ -1,9 +1,9 @@
 package NeuralNetwork;
 
 public class Layer {
-    Activation activation;
-    double[] val, preAct, bias, biasGrad, preActGrad;
-    double[][] weight, grad;
+    public Activation activation;
+    public double[] val, preAct, bias, biasGrad, preActGrad;
+    public double[][] weight, grad;
 
     public Layer( int nodeCount, int prevLayerCount, Activation a ) {
         val = new double[ nodeCount ];
