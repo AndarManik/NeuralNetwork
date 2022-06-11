@@ -19,7 +19,7 @@ public class TrainBooleanOperatorNetworkProof {
     /**
      * Trains a new initialization of a Bias Manager a number of times
      * @param tries Cut off point
-     * @return      True if the total error is less than 0.5
+     * @return      True if the total error of a single try is less than 0.5
      *              False if it does not return true after 'TRIES' times
      */
     private static boolean works(int tries) {
@@ -29,6 +29,13 @@ public class TrainBooleanOperatorNetworkProof {
         return false;
     }
 
+    /**
+     * initialize a new bnn and train it epocMag times
+     * return the final error of the bnn
+     * @param epocMag   10^epocMag number of epoc iterations
+     * @param rate      learning rate for the bnn
+     * @return          final error of the bnn
+     */
     private static double train(double epocMag, double rate) {
         bm = new BiasManager(new int[]{2, 3, 1}, 16);
         for (int epoc = 0; epoc < Math.pow(10, epocMag); epoc++)
@@ -36,6 +43,11 @@ public class TrainBooleanOperatorNetworkProof {
         return proof();
     }
 
+    /**
+     * a single pass through an entire task space
+     * @param rate  learning rate for the bnn
+     * @param task  which task and biases to use on the bnn
+     */
     private static void singlePass(double rate, int task) {
         bm.setBias(task);
         double[] currentOp = outputSpace.get(task);
