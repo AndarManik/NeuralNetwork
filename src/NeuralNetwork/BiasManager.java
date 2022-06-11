@@ -31,6 +31,23 @@ public class BiasManager extends NeuralNetwork {
         }
     }
 
+    /**
+     * Constructs a Neural Network and a set of biases
+     * @param dim       Dimension of the network
+     * @param biasCount Number of biases
+     */
+    public BiasManager(int[] dim, int biasCount, Activation hiddenActivation, Activation outputActivation) {
+        super(dim, hiddenActivation, outputActivation);
+        biases = new ArrayList<>();
+        ArrayList<double[]> bias = getBias();
+        for (int i = 0; i < biasCount; i++) {
+            ArrayList<double[]> curBias = new ArrayList<>();
+            for (double[] b : bias)
+                curBias.add(b.clone());
+            biases.add(curBias);
+        }
+    }
+
     //returns a copy of the current bias
     public ArrayList<double[]> getBias() {
         ArrayList<double[]> biases = new ArrayList<>();

@@ -4,27 +4,27 @@ import java.util.ArrayList;
 
 public class TrainBooleanOperatorNetworkProof {
 
-    static final int TRIES = 100;
-    static final double CUTOFF = 0.3;
-    static final boolean printErrors = false;
-    static final int EPOCMAG = 6;
-    static final double RATE = 0.01;
-    static BiasManager bm;
-    static ArrayList<double[]> inputSpace = binaryProductSpace(2);
-    static ArrayList<double[]> outputSpace = binaryProductSpace(4);
-
+    static final int NUMBER_OF_TRIES_FOR_FAILURE = 1000;
+    static final double MAX_ERROR_FOR_SUCCESS = 0.2;
+    static final boolean PRINT_ERRORS = true;
+    static final int MAGNITUDE_OF_EPOCHS = 5;
+    static final double RATE = 0.1;
+    static final ArrayList<double[]> INPUT_SPACE = binaryProductSpace(2);
+    static final ArrayList<double[]> OUTPUT_SPACE = binaryProductSpace(4);
+    static BiasManager globalPointerNeuralNetwork;
+    static Activation hiddenActivation = new Tanh();
+    static Activation outputActivation = new Tanh();
     public static void main(String[] args) {
-        System.out.println(works( TRIES ));
+        System.out.println(works());
     }
     /**
      * Trains a new initialization of a Bias Manager a number of times
-     * @param tries Cut off point
      * @return      True if the total error of a single try is less than 0.5
      *              False if it does not return true after 'TRIES' times
      */
-    private static boolean works(int tries) {
-        for (int i = 0; i < tries; i++)
-            if (train(EPOCMAG, RATE) < CUTOFF)
+    private static boolean works() {
+        for (int i = 0; i < NUMBER_OF_TRIES_FOR_FAILURE; i++)
+            if (train(MAGNITUDE_OF_EPOCHS, RATE) < MAX_ERROR_FOR_SUCCESS)
                 return true;
         return false;
     }
@@ -37,7 +37,7 @@ public class TrainBooleanOperatorNetworkProof {
      * @return          final error of the bnn
      */
     private static double train(double epocMag, double rate) {
-        bm = new BiasManager(new int[]{2, 3, 1}, 16);
+        globalPointerNeuralNetwork = new BiasManager(new int[]{2, 3, 1}, 16, hiddenActivation, outputActivation);
         for (int epoc = 0; epoc < Math.pow(10, epocMag); epoc++)
             singlePass(rate, epoc % 16);
         return proof();
@@ -49,11 +49,11 @@ public class TrainBooleanOperatorNetworkProof {
      * @param task  which task and biases to use on the bnn
      */
     private static void singlePass(double rate, int task) {
-        bm.setBias(task);
-        double[] currentOp = outputSpace.get(task);
-        for (int i = 0; i < inputSpace.size(); i++)
-            bm.back(inputSpace.get(i), new double[]{currentOp[i]});
-        bm.update(rate);
+        globalPointerNeuralNetwork.setBias(task);
+        double[] currentOp = OUTPUT_SPACE.get(task);
+        for (int i = 0; i < INPUT_SPACE.size(); i++)
+            globalPointerNeuralNetwork.back(INPUT_SPACE.get(i), new double[]{currentOp[i]});
+        globalPointerNeuralNetwork.update(rate);
     }
 
     //Proof=============================================================
@@ -68,7 +68,7 @@ public class TrainBooleanOperatorNetworkProof {
         double sum = 0;
         for (double d : getScoreList())
             sum += d;
-        if(printErrors)
+        if(PRINT_ERRORS)
             System.out.println(sum);
         return sum;
     }
@@ -90,11 +90,11 @@ public class TrainBooleanOperatorNetworkProof {
      * @return      Error for the current task
      */
     private static double getTaskError(int task) {
-        bm.setBias(task);
-        double[] currentOp = outputSpace.get(task);
+        globalPointerNeuralNetwork.setBias(task);
+        double[] currentOp = OUTPUT_SPACE.get(task);
         double error = 0;
         for (int i = 0; i < currentOp.length; i++)
-            error += Math.abs((bm.calc(inputSpace.get(i))[0] - currentOp[i]));
+            error += Math.abs((globalPointerNeuralNetwork.calc(INPUT_SPACE.get(i))[0] - currentOp[i]));
         return error;
     }
 

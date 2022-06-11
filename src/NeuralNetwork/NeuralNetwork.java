@@ -9,6 +9,12 @@ public class NeuralNetwork {
             network.add( new Layer( dim[ layer ], dim[ layer - 1 ], new Tanh() ) );
     }
 
+    public NeuralNetwork( int[] dim, Activation hiddenActivation, Activation outputActivation ) {
+        for ( int layer = 1; layer < dim.length - 1; layer++ )
+            network.add( new Layer( dim[ layer ], dim[ layer - 1 ], hiddenActivation) );
+        network.add(new Layer(dim[dim.length - 1], dim[dim.length - 2], outputActivation));
+    }
+
     public double[] calc( double[] input ) {
         for ( Layer layer : network )
             input = layer.calc( input );
