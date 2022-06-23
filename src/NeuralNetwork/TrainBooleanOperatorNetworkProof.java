@@ -3,15 +3,25 @@ package NeuralNetwork;
 import java.util.ArrayList;
 
 public class TrainBooleanOperatorNetworkProof {
+    /*
+        Understanding about Neural Networks have come from projecting the space of neural networks
+        to the space of boolean operations. The motivating example of this is XOR,
+        a boolean operation which is not linearly separable. When training a neural network on XOR,
+        the necessity of an extra hidden node is projected to the non-separability.
+
+        This program is a proof of a type of neural network which can be seen as a projection of
+        the entire task space of boolean operations, a boolean operator.
+        The idea is to find a common structure between all boolean operations, the arbitrary choice
+        of parametrizing the biases makes weights a projection of the entire task space.
+     */
 
     static final int NUMBER_OF_TRIES_FOR_FAILURE = 1000;
-    static final double MAX_ERROR_FOR_SUCCESS = 0.2;
+    static final double MAX_ERROR_FOR_SUCCESS = 0.1;
     static final boolean PRINT_ERRORS = true;
-    static final int MAGNITUDE_OF_EPOCHS = 5;
-    static final double RATE = 0.1;
+    static final double MAGNITUDE_OF_EPOCHS = 6;
+    static final double RATE = 0.05;
     static final ArrayList<double[]> INPUT_SPACE = binaryProductSpace(2);
     static final ArrayList<double[]> OUTPUT_SPACE = binaryProductSpace(4);
-    static BiasManager globalPointerNeuralNetwork;
     static Activation hiddenActivation = new Tanh();
     static Activation outputActivation = new Tanh();
     public static void main(String[] args) {
@@ -22,11 +32,13 @@ public class TrainBooleanOperatorNetworkProof {
      * @return      True if the total error of a single try is less than 0.5
      *              False if it does not return true after 'TRIES' times
      */
-    private static boolean works() {
-        for (int i = 0; i < NUMBER_OF_TRIES_FOR_FAILURE; i++)
-            if (train(MAGNITUDE_OF_EPOCHS, RATE) < MAX_ERROR_FOR_SUCCESS)
-                return true;
-        return false;
+    private static BiasManager works() {
+        for (int i = 0; i < NUMBER_OF_TRIES_FOR_FAILURE; i++) {
+            BiasManager bm = train(MAGNITUDE_OF_EPOCHS, RATE);
+            if(proof(bm) < MAX_ERROR_FOR_SUCCESS)
+                return bm;
+        }
+        return null;
     }
 
     /**
@@ -36,11 +48,11 @@ public class TrainBooleanOperatorNetworkProof {
      * @param rate      learning rate for the bnn
      * @return          final error of the bnn
      */
-    private static double train(double epocMag, double rate) {
-        globalPointerNeuralNetwork = new BiasManager(new int[]{2, 3, 1}, 16, hiddenActivation, outputActivation);
+    private static BiasManager train(double epocMag, double rate) {
+        BiasManager bm = new BiasManager(new int[]{2, 3, 1}, 16, hiddenActivation, outputActivation);
         for (int epoc = 0; epoc < Math.pow(10, epocMag); epoc++)
-            singlePass(rate, epoc % 16);
-        return proof();
+            singlePass(bm, rate, epoc % 16);
+        return bm;
     }
 
     /**
@@ -48,12 +60,12 @@ public class TrainBooleanOperatorNetworkProof {
      * @param rate  learning rate for the bnn
      * @param task  which task and biases to use on the bnn
      */
-    private static void singlePass(double rate, int task) {
-        globalPointerNeuralNetwork.setBias(task);
+    private static void singlePass(BiasManager bm, double rate, int task) {
+        bm.setBias(task);
         double[] currentOp = OUTPUT_SPACE.get(task);
         for (int i = 0; i < INPUT_SPACE.size(); i++)
-            globalPointerNeuralNetwork.back(INPUT_SPACE.get(i), new double[]{currentOp[i]});
-        globalPointerNeuralNetwork.update(rate);
+            bm.back(INPUT_SPACE.get(i), new double[]{currentOp[i]});
+        bm.update(rate);
     }
 
     //Proof=============================================================
@@ -64,9 +76,9 @@ public class TrainBooleanOperatorNetworkProof {
      * Sums of the errors of the network at its current state
      * @return  Sum of errors
      */
-    private static double proof() {
+    private static double proof(BiasManager bm) {
         double sum = 0;
-        for (double d : getScoreList())
+        for (double d : getScoreList(bm))
             sum += d;
         if(PRINT_ERRORS)
             System.out.println(sum);
@@ -77,10 +89,10 @@ public class TrainBooleanOperatorNetworkProof {
      * Computes the error of the Bias Manager for every tasks
      * @return  Array storing the errors for every task
      */
-    private static double[] getScoreList() {
+    private static double[] getScoreList(BiasManager bm) {
         double[] scoreList = new double[16];
         for (int task = 0; task < 16; task++)
-            scoreList[task] = getTaskError(task);
+            scoreList[task] = getTaskError(bm, task);
         return scoreList;
     }
 
@@ -89,12 +101,12 @@ public class TrainBooleanOperatorNetworkProof {
      * @param task  Current task for the Bias Manager
      * @return      Error for the current task
      */
-    private static double getTaskError(int task) {
-        globalPointerNeuralNetwork.setBias(task);
+    private static double getTaskError(BiasManager bm, int task) {
+        bm.setBias(task);
         double[] currentOp = OUTPUT_SPACE.get(task);
         double error = 0;
         for (int i = 0; i < currentOp.length; i++)
-            error += Math.abs((globalPointerNeuralNetwork.calc(INPUT_SPACE.get(i))[0] - currentOp[i]));
+            error += Math.abs((bm.calc(INPUT_SPACE.get(i))[0] - currentOp[i]));
         return error;
     }
 

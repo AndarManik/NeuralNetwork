@@ -23,6 +23,7 @@ public class BiasManager extends NeuralNetwork {
         super(dim);
         biases = new ArrayList<>();
         ArrayList<double[]> bias = getBias();
+        bias.remove(bias.size() - 1);
         for (int i = 0; i < biasCount; i++) {
             ArrayList<double[]> curBias = new ArrayList<>();
             for (double[] b : bias)
@@ -40,6 +41,7 @@ public class BiasManager extends NeuralNetwork {
         super(dim, hiddenActivation, outputActivation);
         biases = new ArrayList<>();
         ArrayList<double[]> bias = getBias();
+        bias.remove(bias.size() - 1);
         for (int i = 0; i < biasCount; i++) {
             ArrayList<double[]> curBias = new ArrayList<>();
             for (double[] b : bias)
@@ -57,7 +59,7 @@ public class BiasManager extends NeuralNetwork {
     }
 
     public void setBias(ArrayList<double[]> bias) {
-        for (int i = 0; i < network.size(); i++)
+        for (int i = 0; i < bias.size(); i++)
             network.get(i).bias = bias.get(i);
     }
 
@@ -94,5 +96,24 @@ public class BiasManager extends NeuralNetwork {
                 BiasOut.print(Arrays.toString(d) + "  ");
             BiasOut.println();
         }
+    }
+
+    @Override
+    public String toString() {
+        StringBuilder sb = new StringBuilder();
+        sb.append("Weights").append("\n");
+        for (Layer l : network) {
+            for (double[] d : l.weight)
+                sb.append(Arrays.toString(d)).append(" ").append(d[0] / d[1]).append(" ").append("\n");
+        }
+        sb.append("Biases").append("\n");
+        for (ArrayList<double[]> bias : biases) {
+            for (double[] d : bias)
+                sb.append(Arrays.toString(d)).append("  ");
+            sb.append("\n\n");
+        }
+        double[] outputBias = network.get(network.size() - 1).bias;
+        sb.append(Arrays.toString(outputBias));
+        return sb.toString();
     }
 }
