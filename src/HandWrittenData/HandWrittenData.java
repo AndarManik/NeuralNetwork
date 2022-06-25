@@ -5,20 +5,20 @@ import java.util.List;
 
 public class HandWrittenData {
     public static int[] labelData() {
-        return MnistReader.getLabels("C:\\Users\\Agi\\IdeaProjects\\NeuralNetwork\\src\\HandWrittenData\\train-labels.idx1-ubyte");//insert location of this file here
+        return MnistReader.getLabels("C:\\Users\\Sikin\\Documents\\GitHub\\NeuralNetwork\\src\\HandWrittenData\\train-labels.idx1-ubyte");//insert location of this file here
     }
 
     public static ArrayList<double[]> imageData(double min, double max) {
-        List<int[][]> imageinput = MnistReader.getImages("C:\\Users\\Agi\\IdeaProjects\\NeuralNetwork\\src\\HandWrittenData\\train-images.idx3-ubyte");//insert location of this file here
+        List<int[][]> imageinput = MnistReader.getImages("C:\\Users\\Sikin\\Documents\\GitHub\\NeuralNetwork\\src\\HandWrittenData\\train-images.idx3-ubyte");//insert location of this file here
         return convert3dto2d(imageinput, min, max);
     }
 
     public static int[] testLabelData() {
-        return MnistReader.getLabels("C:\\Users\\Agi\\IdeaProjects\\NeuralNetwork\\src\\HandWrittenData\\t10k-labels.idx1-ubyte");//insert location of this file here
+        return MnistReader.getLabels("C:\\Users\\Sikin\\Documents\\GitHub\\NeuralNetwork\\src\\HandWrittenData\\t10k-labels.idx1-ubyte");//insert location of this file here
     }
 
     public static ArrayList<double[]> testImages(double min, double max) {
-        ArrayList<int[][]> imageinput = (ArrayList<int[][]>) MnistReader.getImages("C:\\Users\\Agi\\IdeaProjects\\NeuralNetwork\\src\\HandWrittenData\\t10k-images.idx3-ubyte");//insert location of this file here
+        ArrayList<int[][]> imageinput = (ArrayList<int[][]>) MnistReader.getImages("C:\\Users\\Sikin\\Documents\\GitHub\\NeuralNetwork\\src\\HandWrittenData\\t10k-images.idx3-ubyte");//insert location of this file here
         return convert3dto2d(imageinput, min, max);
     }
 

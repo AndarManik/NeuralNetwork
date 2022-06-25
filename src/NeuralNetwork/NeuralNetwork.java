@@ -1,5 +1,6 @@
 package NeuralNetwork;
 import java.util.ArrayList;
+import java.util.Arrays;
 
 public class NeuralNetwork {
     public ArrayList<Layer> network = new ArrayList<>();
@@ -68,4 +69,21 @@ public class NeuralNetwork {
     public void setLayerActivation( int index, Activation activation ) {
         network.get( index ).activation = activation;
     }
+
+    public String toString() {
+        StringBuilder sb = new StringBuilder();
+        sb.append("Weights").append("\n");
+        for (Layer l : network) {
+            for (double[] d : l.weight)
+                sb.append(Arrays.toString(d)).append(" ").append(d[0] / d[1]).append(" ").append("\n");
+            sb.append("\n");
+        }
+        sb.append("Biases").append("\n");
+        for (Layer l : network) {
+            double[] d = l.bias;
+            sb.append(Arrays.toString(d)).append(" ").append(d[0] / d[1]).append(" ").append("\n");
+        }
+        return sb.toString();
+    }
+
 }

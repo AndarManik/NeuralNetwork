@@ -15,7 +15,7 @@ public class TrainBooleanOperatorNetworkProof {
         of parametrizing the biases makes weights a projection of the entire task space.
      */
 
-    static final int NUMBER_OF_TRIES_FOR_FAILURE = 1000;
+    static final int NUMBER_OF_TRIES_FOR_FAILURE = 20;
     static final double MAX_ERROR_FOR_SUCCESS = 0.1;
     static final boolean PRINT_ERRORS = true;
     static final double MAGNITUDE_OF_EPOCHS = 6;
@@ -25,7 +25,7 @@ public class TrainBooleanOperatorNetworkProof {
     static Activation hiddenActivation = new Tanh();
     static Activation outputActivation = new Tanh();
     public static void main(String[] args) {
-        System.out.println(works());
+            System.out.println(works());
     }
     /**
      * Trains a new initialization of a Bias Manager a number of times
@@ -50,6 +50,7 @@ public class TrainBooleanOperatorNetworkProof {
      */
     private static BiasManager train(double epocMag, double rate) {
         BiasManager bm = new BiasManager(new int[]{2, 3, 1}, 16, hiddenActivation, outputActivation);
+        setFinalBiasZero(bm);
         for (int epoc = 0; epoc < Math.pow(10, epocMag); epoc++)
             singlePass(bm, rate, epoc % 16);
         return bm;
@@ -66,6 +67,7 @@ public class TrainBooleanOperatorNetworkProof {
         for (int i = 0; i < INPUT_SPACE.size(); i++)
             bm.back(INPUT_SPACE.get(i), new double[]{currentOp[i]});
         bm.update(rate);
+        setFinalBiasZero(bm);
     }
 
     //Proof=============================================================
@@ -141,4 +143,9 @@ public class TrainBooleanOperatorNetworkProof {
             output[j] = (remainder % 2 - 0.5) * 2;
         return output;
     }
+
+    private static void setFinalBiasZero(BiasManager bm){
+        bm.network.get(bm.network.size() - 1).bias[0] = 0;
+    }
+
 }

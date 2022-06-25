@@ -105,6 +105,7 @@ public class BiasManager extends NeuralNetwork {
         for (Layer l : network) {
             for (double[] d : l.weight)
                 sb.append(Arrays.toString(d)).append(" ").append(d[0] / d[1]).append(" ").append("\n");
+            sb.append("\n");
         }
         sb.append("Biases").append("\n");
         for (ArrayList<double[]> bias : biases) {
